@@ -20,6 +20,26 @@ sudo apt-get install -y python3-pyqt6 && pip install ".[gui]"
 
 Or run the helper script: `bash contrib/setup-wojakcoin.sh`
 
+### Windows
+
+Electrum WojakCoin runs on Windows (Qt GUI supported). You can run from source or build a standalone .exe.
+
+**From source (Python 3.10+ required):**
+1. Install [Python 3.10+](https://www.python.org/) (add to PATH) and [Git](https://gitforwindows.org/).
+2. Clone and install dependencies:
+   ```
+   git clone https://github.com/reallyshadydev/electrum-wojakcoin.git
+   cd electrum-wojakcoin
+   pip install -r contrib/requirements/requirements.txt
+   pip install ".[gui,crypto]"
+   ```
+3. Install libsecp256k1 (required): see [Running from source on Windows](contrib/build-wine/README_windows.md) for MSYS2/MinGW or cross-compile options.
+4. Run: double-click **`run_electrum.bat`** or in Command Prompt: `python run_electrum`
+
+**Standalone .exe / installer:** Pre-built Windows installers are produced via [GitHub Actions](.github/workflows/build-windows.yml). When you [create a release](https://github.com/reallyshadydev/electrum-wojakcoin/releases/new), the workflow builds and attaches `electrum-wojakcoin-*-setup.exe` (and other .exe artifacts) to that release. You can also run the "Build Windows (Electrum WojakCoin)" workflow manually from the Actions tab; artifacts are then available from the run. To build locally (e.g. from Linux with Docker), see [contrib/build-wine/](contrib/build-wine/README.md).
+
+**How to get pre-built installers:** Create a tag (e.g. `v4.7.1-wojak`), then [create a Release](https://github.com/reallyshadydev/electrum-wojakcoin/releases/new) from that tag and publish it. The workflow runs automatically and attaches the built .exe(s) to the release.
+
 ```
 Licence: MIT Licence
 Author: Thomas Voegtlin

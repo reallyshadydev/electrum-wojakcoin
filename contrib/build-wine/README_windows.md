@@ -1,22 +1,22 @@
-# Running Electrum from source on Windows (development version)
+# Running Electrum WojakCoin from source on Windows (development version)
 
 ## Prerequisites
 
-- [python3](https://www.python.org/)
-- [git](https://gitforwindows.org/)
+- [Python 3.10+](https://www.python.org/)
+- [Git](https://gitforwindows.org/)
 
 ## Main steps
 
 ### 1. Check out the code from GitHub:
 ```
-> git clone https://github.com/spesmilo/electrum.git
-> cd electrum
+> git clone https://github.com/reallyshadydev/electrum-wojakcoin.git
+> cd electrum-wojakcoin
 > git submodule update --init
 ```
 
 Run install (this should install most dependencies):
 ```
-> python3 -m pip install --user -e ".[gui,crypto]"
+> python -m pip install --user -e ".[gui,crypto]"
 ```
 
 ### 2. Install `libsecp256k1`
@@ -49,18 +49,18 @@ Alternatively, MSYS2 and MinGW-w64 can be used directly on Windows, as follows.
   $ pacman -S --needed git base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools
   $ export PATH="$PATH:/mingw64/bin"
   ```
-  `cd` into the git clone, e.g. `C:\wspace\electrum` (auto-mounted at `/c/wspace/electrum`)
+  `cd` into the git clone, e.g. `C:\wspace\electrum-wojakcoin` (auto-mounted at `/c/wspace/electrum-wojakcoin`)
   ```
-  $ cd /c/wspace/electrum
+  $ cd /c/wspace/electrum-wojakcoin
   $ GCC_TRIPLET_HOST="x86_64-w64-mingw32" ./contrib/make_libsecp256k1.sh
   ```
 
 (note: this is a bit cumbersome, see [issue #5976](https://github.com/spesmilo/electrum/issues/5976)
 for discussion)
 
-### 3. Run electrum:
+### 3. Run Electrum WojakCoin:
 
+Double-click **run_electrum.bat** in the repo root, or in Command Prompt:
 ```
-> python3 ./run_electrum
+> python run_electrum
 ```
-

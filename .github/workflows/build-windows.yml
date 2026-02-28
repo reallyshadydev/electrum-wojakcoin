@@ -1,0 +1,40 @@
+# Build Windows binaries and attach to GitHub Release when a release is published.
+# Also runnable manually (workflow_dispatch) - artifacts will be in the workflow run.
+
+name: Build Windows (Electrum WojakCoin)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+          fetch-depth: 0
+
+      - name: Build Windows binaries
+        run: ./contrib/build-wine/build.sh
+
+      - name: Upload artifacts to workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build-${{ github.run_number }}
+          path: |
+            contrib/build-wine/dist/*.exe
+            contrib/build-wine/dist/electrum/*.exe
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            contrib/build-wine/dist/*.exe
+            contrib/build-wine/dist/electrum/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
