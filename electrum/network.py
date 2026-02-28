@@ -1,4 +1,4 @@
-# Electrum - Lightweight Bitcoin Client
+# Electrum - Lightweight WojakCoin Client
 # Copyright (c) 2011-2016 Thomas Voegtlin
 #
 # Permission is hereby granted, free of charge, to any person
@@ -729,6 +729,9 @@ class Network(Logger, NetworkRetryManager[ServerAddr]):
             if self.config.NETWORK_ONESERVER:
                 self.logger.warning(f'"oneserver" option enabled, but no "server" defined; falling back to localhost:1:s.')
                 self.default_server = ServerAddr.from_str("localhost:1:s")
+            elif constants.net.NET_NAME == "wojakcoin":
+                # Prefer electrum1 for WojakCoin (~60k blocks)
+                self.default_server = ServerAddr(host="electrum1.wojakcoin.cash", port=50102, protocol="s")
             else:
                 self.default_server = pick_random_server(allowed_protocols=self._allowed_protocols)
         assert isinstance(self.default_server, ServerAddr), f"invalid type for default_server: {self.default_server!r}"

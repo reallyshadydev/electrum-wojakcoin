@@ -1,1 +1,1 @@
-Fast and self-custodial wallet for Bitcoin and the Lightning Network
+Fast and self-custodial wallet for WojakCoin (WJK) and the Lightning Network

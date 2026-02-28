@@ -1,0 +1,8 @@
+{
+    "electrum1.wojakcoin.cash": {
+        "pruning": "-",
+        "s": "50102",
+        "t": "50101",
+        "version": "1.4"
+    }
+}

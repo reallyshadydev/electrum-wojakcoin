@@ -50,6 +50,7 @@ class WizardTestCase(ElectrumTestCase):
         self.config = SimpleConfig({
             'electrum_path': self.electrum_path,
             'enable_plugin_trustedcoin': True,
+            'mainnet': True,  # tests assert Bitcoin addresses; keep chain consistent
         })
         self.wallet_path = os.path.join(self.electrum_path, "somewallet")
         self.plugins = Plugins(self.config, gui_name='cmdline')

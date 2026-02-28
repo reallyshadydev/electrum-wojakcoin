@@ -7,7 +7,10 @@ from electrum.util import (format_satoshis, format_fee_satoshis, is_hash256_str,
                            list_enabled_bits, format_satoshis_plain, is_private_netaddress, is_hex_str,
                            is_integer, is_non_negative_integer, is_int_or_float, is_non_negative_int_or_float,
                            ShortID)
-from electrum.bip21 import parse_bip21_URI, InvalidBitcoinURI
+from electrum import constants
+from electrum.bip21 import parse_bip21_URI, create_bip21_uri, InvalidBitcoinURI
+from electrum.bitcoin import hash160_to_b58_address
+from electrum.util import bfh
 from . import ElectrumTestCase, as_testnet
 
 
@@ -147,6 +150,24 @@ class TestUtil(ElectrumTestCase):
 
     def test_parse_URI_invalid(self):
         self.assertRaises(InvalidBitcoinURI, parse_bip21_URI, 'notbitcoin:15mKKb2eos1hWa6tisdPwwDC1a5J1y9nma')
+
+    def test_bip21_wojakcoin_uri_scheme(self):
+        """create_bip21_uri uses constants.net.BIP21_URI_SCHEME (wojakcoin: when on WojakCoin)."""
+        old_net = constants.net
+        try:
+            constants.WojakCoinMainnet.set_as_network()
+            # Build a valid WojakCoin P2PKH address (W-prefix)
+            h160 = bfh('00' * 20)  # any 20-byte hash
+            wjk_addr = hash160_to_b58_address(h160, constants.net.ADDRTYPE_P2PKH)
+            self.assertTrue(wjk_addr.startswith('W'), f"WojakCoin P2PKH address should start with W: {wjk_addr}")
+            uri = create_bip21_uri(wjk_addr, 1000, None)
+            self.assertTrue(uri.startswith('wojakcoin:'), f"Expected wojakcoin: URI, got: {uri}")
+            self.assertIn(wjk_addr, uri)
+            # Parse accepts both schemes
+            out = parse_bip21_URI('wojakcoin:' + wjk_addr)
+            self.assertEqual(out['address'], wjk_addr)
+        finally:
+            constants.net = old_net
 
     def test_parse_URI_parameter_pollution(self):
         self.assertRaises(InvalidBitcoinURI, parse_bip21_URI, 'bitcoin:15mKKb2eos1hWa6tisdPwwDC1a5J1y9nma?amount=0.0003&label=test&amount=30.0')

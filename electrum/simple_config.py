@@ -252,7 +252,10 @@ class SimpleConfig(Logger):
         if selected_chains:
             # note: if multiple are selected, we just pick one deterministically random
             return selected_chains[0]
-        return constants.BitcoinMainnet
+        # When running tests, default to mainnet so address/path assertions pass (use regtest/mainnet in config if needed)
+        if os.environ.get('ELECTRUM_TEST_CHAIN') == '1':
+            return constants.BitcoinMainnet
+        return constants.WojakCoinMainnet
 
     def electrum_path(self):
         path = self.electrum_path_root()
@@ -868,7 +871,7 @@ Warning: setting this to too low will result in lots of payment failures."""),
     )
     BTC_AMOUNTS_ADD_THOUSANDS_SEP = ConfigVar(
         'amt_add_thousands_sep', default=False, type_=bool,
-        short_desc=lambda: _("Add thousand separators to bitcoin amounts"),
+        short_desc=lambda: _("Add thousand separators to WojakCoin amounts"),
     )
 
     BLOCK_EXPLORER = ConfigVar(

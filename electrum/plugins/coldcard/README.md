@@ -15,7 +15,7 @@ PIN. Initial setup, and seed generation must be done offline.
 
 Coldcard uses the standard for unsigned transactions:
 
-PSBT = Partially Signed Bitcoin Transaction = BIP174
+PSBT = Partially Signed Bitcoin Transaction (BIP174) — same format used for WojakCoin
 
 The Coldcard can be used 100% offline: it can generate a skeleton
 Electrum wallet and save it to MicroSD card. Transport that file
@@ -26,7 +26,7 @@ Spending transactions can be saved to MicroSD using by exporting them
 from transaction preview dialog (when this plugin is
 owner of the wallet). That PSBT is then signed on the Coldcard
 (again using MicroSD both ways). The result is a ready-to-transmit
-bitcoin transaction, which can be transmitted using Tools > Load
+on-chain transaction, which can be transmitted using Tools > Load
 Transaction > From File in Electrum or really any tool.
 
 <https://coldcardwallet.com>

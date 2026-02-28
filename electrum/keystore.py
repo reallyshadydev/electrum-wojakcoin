@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- mode: python -*-
 #
-# Electrum - lightweight Bitcoin client
+# Electrum - lightweight WojakCoin client
 # Copyright (C) 2016  The Electrum developers
 #
 # Permission is hereby granted, free of charge, to any person
@@ -1195,6 +1195,9 @@ def purpose48_derivation(account_id: int, xtype: str) -> str:
 def from_seed(seed: str, *, passphrase: Optional[str], for_multisig: bool = False) -> Union[BIP32_KeyStore, Old_KeyStore]:
     passphrase = passphrase or ""
     t = calc_seed_type(seed)
+    # WojakCoin is legacy-only; use standard derivation/xtype even for segwit seeds
+    if t == 'segwit' and getattr(constants, 'net', None) and getattr(constants.net, 'NET_NAME', None) == 'wojakcoin':
+        t = 'standard'
     if t == 'old':
         if passphrase:
             raise Exception("'old'-type electrum seed cannot have passphrase")

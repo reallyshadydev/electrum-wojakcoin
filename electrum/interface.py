@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Electrum - lightweight Bitcoin client
+# Electrum - lightweight WojakCoin client
 # Copyright (C) 2011 thomasv@gitorious
 #
 # Permission is hereby granted, free of charge, to any person
@@ -1562,7 +1562,7 @@ class Interface(Logger):
             return ''
         if not isinstance(res, str):
             raise RequestCorrupted(f'{res!r} should be a str')
-        address = res.removeprefix('bitcoin:')
+        address = res.removeprefix('bitcoin:').removeprefix('wojakcoin:')
         if not bitcoin.is_address(address):
             # note: do not hard-fail -- allow server to use future-type
             #       bitcoin address we do not recognize

@@ -84,6 +84,7 @@ class MockInterface(Interface):
 
 
 class TestHeaderChainResolution(ElectrumTestCase):
+    REGTEST = True
 
     @classmethod
     def setUpClass(cls):

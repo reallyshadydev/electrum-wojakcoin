@@ -1,4 +1,24 @@
-# Electrum - Lightweight Bitcoin client
+# Electrum - Lightweight WojakCoin client
+
+**This fork: Electrum for WojakCoin (WJK).** Default network is WojakCoin mainnet; servers: electrum1.wojakcoin.cash (50101/50102), electrum2.wojakcoin.cash (50001/50002). Use `--mainnet` for Bitcoin, `--wojakcoin` for WojakCoin (default).
+
+### Quick install (WojakCoin fork)
+
+```bash
+# One-time: system deps + Python deps (use system libsecp256k1 to avoid compiling)
+sudo apt-get install -y libsecp256k1-dev python3-pip
+pip install --upgrade pip
+ELECTRUM_ECC_DONT_COMPILE=1 pip install -r contrib/requirements/requirements.txt
+pip install cryptography ".[crypto]"
+
+# Optional: Qt GUI
+sudo apt-get install -y python3-pyqt6 && pip install ".[gui]"
+
+# Run (default chain = WojakCoin)
+./run_electrum
+```
+
+Or run the helper script: `bash contrib/setup-wojakcoin.sh`
 
 ```
 Licence: MIT Licence

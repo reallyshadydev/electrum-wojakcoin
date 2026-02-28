@@ -56,12 +56,17 @@ class ElectrumTestCase(unittest.IsolatedAsyncioTestCase, Logger):
             constants.BitcoinRegtest.set_as_network()
         elif cls.TESTNET:
             constants.BitcoinTestnet.set_as_network()
+        else:
+            # Use Bitcoin mainnet so tests that assert Bitcoin addresses (bc1q, 1...) pass
+            constants.BitcoinMainnet.set_as_network()
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         if cls.TESTNET or cls.REGTEST:
             constants.BitcoinMainnet.set_as_network()
+        else:
+            constants.WojakCoinMainnet.set_as_network()
 
     def setUp(self):
         have_lock = self._test_lock.acquire(timeout=0.1)
@@ -75,6 +80,14 @@ class ElectrumTestCase(unittest.IsolatedAsyncioTestCase, Logger):
         util.make_dir(self.electrum_path)
         assert util._asyncio_event_loop is None, "global event loop already set?!"
         self._lnworkers_created = []  # type: List[MockLNWallet]
+        os.environ['ELECTRUM_TEST_CHAIN'] = '1'
+        # Ensure constants.net is correct before every test (order-independent)
+        if self.REGTEST:
+            constants.BitcoinRegtest.set_as_network()
+        elif self.TESTNET:
+            constants.BitcoinTestnet.set_as_network()
+        else:
+            constants.BitcoinMainnet.set_as_network()
 
     async def asyncSetUp(self):
         await super().asyncSetUp()
@@ -94,6 +107,7 @@ class ElectrumTestCase(unittest.IsolatedAsyncioTestCase, Logger):
 
     def tearDown(self):
         util.callback_mgr.clear_all_callbacks()
+        os.environ.pop('ELECTRUM_TEST_CHAIN', None)
         shutil.rmtree(self.unittest_base_path)
         super().tearDown()
         util._asyncio_event_loop = None  # cleared here, at the ~last possible moment. asyncTearDown is too early.

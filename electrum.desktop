@@ -3,21 +3,21 @@
 # Note: This assumes $HOME/.local/bin is in your $PATH
 
 [Desktop Entry]
-Comment=Lightweight Bitcoin Client
+Comment=Lightweight WojakCoin Client
 Exec=electrum %u
-GenericName[en_US]=Bitcoin Wallet
-GenericName=Bitcoin Wallet
+GenericName[en_US]=WojakCoin Wallet
+GenericName=WojakCoin Wallet
 Icon=electrum
-Name[en_US]=Electrum Bitcoin Wallet
-Name=Electrum Bitcoin Wallet
+Name[en_US]=Electrum WojakCoin Wallet
+Name=Electrum WojakCoin Wallet
 Categories=Finance;Network;
 StartupNotify=true
 StartupWMClass=electrum
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/bitcoin;x-scheme-handler/lightning;
+MimeType=x-scheme-handler/wojakcoin;x-scheme-handler/bitcoin;x-scheme-handler/lightning;
 Actions=Testnet;
-Keywords=crypto;currency;BTC
+Keywords=crypto;currency;WJK;WojakCoin
 
 [Desktop Action Testnet]
 Exec=electrum --testnet %u

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Electrum - lightweight Bitcoin client
+# Electrum - lightweight WojakCoin client
 # Copyright (C) 2018 The Electrum developers
 #
 # Permission is hereby granted, free of charge, to any person
@@ -55,9 +55,9 @@ def create_fallback_node_list(fallback_nodes_dict: dict[str, dict]) -> List[LNPe
     return fallback_nodes
 
 
-GIT_REPO_URL = "https://github.com/spesmilo/electrum"
-GIT_REPO_ISSUES_URL = "https://github.com/spesmilo/electrum/issues"
-RELEASE_NOTES_URL = "https://raw.githubusercontent.com/spesmilo/electrum/refs/heads/master/RELEASE-NOTES"
+GIT_REPO_URL = "https://github.com/reallyshadydev/electrum-wojakcoin"
+GIT_REPO_ISSUES_URL = "https://github.com/reallyshadydev/electrum-wojakcoin/issues"
+RELEASE_NOTES_URL = "https://raw.githubusercontent.com/reallyshadydev/electrum-wojakcoin/refs/heads/master/RELEASE-NOTES"
 BIP39_WALLET_FORMATS = read_json('bip39_wallet_formats.json')
 
 
@@ -65,6 +65,7 @@ class AbstractNet:
 
     NET_NAME: str
     TESTNET: bool
+    BIP21_URI_SCHEME: str = 'bitcoin'  # BIP21 payment URI scheme (e.g. bitcoin:, wojakcoin:)
     WIF_PREFIX: int
     ADDRTYPE_P2PKH: int
     ADDRTYPE_P2SH: int
@@ -259,6 +260,41 @@ class BitcoinMutinynet(BitcoinTestnet):
     LN_DNS_SEEDS = []
 
 
+class WojakCoinMainnet(AbstractNet):
+    """WojakCoin (WJK) - UTXO chain, WojakCore RPC 20760, ElectrumX 50101/50102."""
+    NET_NAME = "wojakcoin"
+    BIP21_URI_SCHEME = "wojakcoin"
+    TESTNET = False
+    WIF_PREFIX = 0xc9
+    ADDRTYPE_P2PKH = 0x49   # 73 - addresses start with 'W'
+    ADDRTYPE_P2SH = 0x05
+    SEGWIT_HRP = "wjk"     # no Segwit on chain; unused
+    BOLT11_HRP = SEGWIT_HRP
+    GENESIS = "000000004536a4f8fa9d88f0001ca9f9825f8d9fd3ba6383a2f030c0427bf085"
+    DEFAULT_PORTS = {'t': '50101', 's': '50102'}
+    BLOCK_HEIGHT_FIRST_LIGHTNING_CHANNELS = 0
+
+    XPRV_HEADERS = {
+        'standard': 0x0488ade4,
+        'p2wpkh-p2sh': 0x049d7878,
+        'p2wsh-p2sh': 0x0295b005,
+        'p2wpkh': 0x04b2430c,
+        'p2wsh': 0x02aa7a99,
+    }
+    XPRV_HEADERS_INV = inv_dict(XPRV_HEADERS)
+    XPUB_HEADERS = {
+        'standard': 0x0488b21e,
+        'p2wpkh-p2sh': 0x049d7cb2,
+        'p2wsh-p2sh': 0x0295b43f,
+        'p2wpkh': 0x04b24746,
+        'p2wsh': 0x02aa7ed3,
+    }
+    XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
+    BIP44_COIN_TYPE = 20760
+    LN_REALM_BYTE = 0
+    LN_DNS_SEEDS = []
+
+
 NETS_LIST = tuple(all_subclasses(AbstractNet))  # type: Sequence[Type[AbstractNet]]
 NETS_LIST = tuple(sorted(NETS_LIST, key=lambda x: x.NET_NAME))
 
@@ -268,4 +304,4 @@ assert len(NETS_LIST) == len(set([chain.cli_flag() for chain in NETS_LIST])), "c
 assert len(NETS_LIST) == len(set([chain.config_key() for chain in NETS_LIST])), "config_key must be unique for each concrete AbstractNet"
 
 # don't import net directly, import the module instead (so that net is singleton)
-net = BitcoinMainnet  # type: Type[AbstractNet]
+net = WojakCoinMainnet  # type: Type[AbstractNet]

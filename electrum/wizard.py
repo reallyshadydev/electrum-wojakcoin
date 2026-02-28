@@ -17,6 +17,7 @@ from electrum.util import UserFacingException
 from electrum.wallet_db import WalletDB
 from electrum.bip32 import normalize_bip32_derivation, xpub_type
 from electrum import keystore, mnemonic, bitcoin
+from electrum import constants
 from electrum.mnemonic import is_any_2fa_seed_type, can_seed_have_passphrase
 from electrum.util import multisig_type
 
@@ -367,6 +368,8 @@ class KeystoreWizard(AbstractWizard):
                     script = data['script_type'] if data['script_type'] != 'p2sh' else 'standard'
                 else:
                     script = data['script_type'] if data['script_type'] != 'p2pkh' else 'standard'
+                if getattr(constants, 'net', None) and getattr(constants.net, 'NET_NAME', None) == 'wojakcoin':
+                    script = 'standard'
                 return keystore.from_bip43_rootseed(root_seed, derivation=derivation, xtype=script)
             elif data['seed_variant'] == 'slip39':
                 root_seed = data['seed'].decrypt(seed_extension)
@@ -375,6 +378,8 @@ class KeystoreWizard(AbstractWizard):
                     script = data['script_type'] if data['script_type'] != 'p2sh' else 'standard'
                 else:
                     script = data['script_type'] if data['script_type'] != 'p2pkh' else 'standard'
+                if getattr(constants, 'net', None) and getattr(constants.net, 'NET_NAME', None) == 'wojakcoin':
+                    script = 'standard'
                 return keystore.from_bip43_rootseed(root_seed, derivation=derivation, xtype=script)
             else:
                 raise Exception('Unsupported seed variant %s' % data['seed_variant'])
@@ -707,7 +712,7 @@ class NewWalletWizard(KeystoreWizard):
             elif 'address_list' in data:
                 for addr in data['address_list'].split():
                     assert isinstance(addr, str)
-                    assert bitcoin.is_address(addr), f"expected bitcoin addr. got {addr[:5] + '..' + addr[-2:]}"
+                    assert bitcoin.is_address(addr), f"expected WojakCoin addr. got {addr[:5] + '..' + addr[-2:]}"
                     # note: we do not normalize addresses. :/
                     #       In particular, bech32 addresses can be either all-lowercase or all-uppercase.
                     #       TODO we should normalize them, but it only makes sense if we also do a walletDB-upgrade.
@@ -728,6 +733,8 @@ class NewWalletWizard(KeystoreWizard):
                     script = data['script_type'] if data['script_type'] != 'p2sh' else 'standard'
                 else:
                     script = data['script_type'] if data['script_type'] != 'p2pkh' else 'standard'
+                if getattr(constants, 'net', None) and getattr(constants.net, 'NET_NAME', None) == 'wojakcoin':
+                    script = 'standard'
                 k = keystore.from_bip43_rootseed(root_seed, derivation=derivation, xtype=script)
             elif is_any_2fa_seed_type(data['seed_type']):
                 self._logger.debug('creating keystore from 2fa seed')

@@ -1,4 +1,4 @@
-# Electrum - lightweight Bitcoin client
+# Electrum - lightweight WojakCoin client
 # Copyright (C) 2015 Thomas Voegtlin
 #
 # Permission is hereby granted, free of charge, to any person
@@ -46,6 +46,7 @@ import electrum_ecc as ecc
 from aiorpcx import ignore_after, run_in_thread
 
 from . import util, keystore, transaction, bitcoin, coinchooser, bip32, descriptor
+from . import constants
 from .i18n import _
 from .bip32 import BIP32Node, convert_bip32_intpath_to_strpath, convert_bip32_strpath_to_intpath
 from .logging import get_logger, Logger
@@ -698,7 +699,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
             addr = str(addrs[0])
             if not bitcoin.is_address(addr):
                 neutered_addr = addr[:5] + '..' + addr[-2:]
-                raise WalletFileException(f'The addresses in this wallet are not bitcoin addresses.\n'
+                raise WalletFileException(f'The addresses in this wallet are not WojakCoin addresses.\n'
                                           f'e.g. {neutered_addr} (length: {len(addr)})')
 
     def check_returned_address_for_corruption(func):
@@ -847,7 +848,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
         if self.is_watching_only():
             raise UserFacingException(_("This is a watching-only wallet"))
         if not is_address(address):
-            raise UserFacingException(_('Invalid bitcoin address: {}').format(address))
+            raise UserFacingException(_('Invalid WojakCoin address: {}').format(address))
         if not self.is_mine(address):
             raise UserFacingException(_('Address not in wallet: {}').format(address))
         index = self.get_address_index(address)
@@ -1861,7 +1862,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
         elif self.use_change:
             change_addrs = self._get_change_addresses_we_can_use_now(allow_reuse=allow_reusing_used_change_addrs)
         for addr in change_addrs:
-            assert is_address(addr), f"not valid bitcoin address: {addr}"
+            assert is_address(addr), f"not valid WojakCoin address: {addr}"
             # note that change addresses are not necessarily ismine
             # in which case this is a no-op
             self.check_address_for_corruption(addr)
@@ -1906,7 +1907,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
             addrs = self.get_change_addresses(slice_start=-gap_limit)
             change_addrs = [random.choice(addrs)] if addrs else []
         for addr in change_addrs:
-            assert is_address(addr), f"not valid bitcoin address: {addr}"
+            assert is_address(addr), f"not valid WojakCoin address: {addr}"
             # note that change addresses are not necessarily ismine
             # in which case this is a no-op
             self.check_address_for_corruption(addr)
@@ -1978,7 +1979,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
 
         if coins is None:
             coins = self.get_spendable_coins()
-        if not inputs and not coins:  # any bitcoin tx must have at least 1 input by consensus
+        if not inputs and not coins:  # any WojakCoin tx must have at least 1 input by consensus
             raise NotEnoughFunds()
         if any([c.already_has_some_signatures() for c in coins]):
             raise Exception("Some inputs already contain signatures!")
@@ -2131,7 +2132,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
 
             tx = PartialTransaction.from_io(list(tx_inputs), list(outputs))
 
-        assert len(tx.outputs()) > 0, "any bitcoin tx must have at least 1 output by consensus"
+        assert len(tx.outputs()) > 0, "any WojakCoin tx must have at least 1 output by consensus"
         if locktime is None:
             # Timelock tx to current height.
             locktime = get_locktime_for_new_transaction(self.network)
@@ -3230,7 +3231,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
         pass
 
     def price_at_timestamp(self, txid, price_func):
-        """Returns fiat price of bitcoin at the time tx got confirmed."""
+        """Returns fiat price of WojakCoin at the time tx got confirmed."""
         timestamp = self.adb.get_tx_height(txid).timestamp
         return price_func(timestamp if timestamp else time.time())
 
@@ -4387,6 +4388,9 @@ def create_new_wallet(
         raise UserFacingException("Remove the existing wallet first!")
     db = WalletDB('', storage=storage, upgrade=True)
 
+    # WojakCoin is legacy-only (P2PKH, W...); use standard seed, not segwit
+    if seed_type is None and getattr(constants, 'net', None) and getattr(constants.net, 'NET_NAME', None) == 'wojakcoin':
+        seed_type = 'standard'
     seed = Mnemonic('en').make_seed(seed_type=seed_type)
     k = keystore.from_seed(seed, passphrase=passphrase)
     db.put('keystore', k.dump())
@@ -4418,8 +4422,8 @@ def restore_wallet_from_text(
     wallet_factory = Wallet,  # used in tests
 ) -> dict:
     """Restore a wallet from text. Text can be a seed phrase, a master
-    public key, a master private key, a list of bitcoin addresses
-    or bitcoin private keys."""
+    public key, a master private key, a list of WojakCoin addresses
+    or WojakCoin private keys."""
     if path is None:  # create wallet in-memory
         storage = None
     else:
