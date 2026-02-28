@@ -120,3 +120,8 @@ EOF
 )
 
 sha256sum dist/electrum*.exe
+
+# Portable zip: full onedir (exe + _internal) so the exe can find python312.dll
+VERSION=$(git -C "$PROJECT_ROOT" describe --tags --dirty --always)
+info "Creating portable zip (includes _internal for Python DLL)"
+(cd dist && zip -r "electrum-wojakcoin-$VERSION-portable.zip" electrum)

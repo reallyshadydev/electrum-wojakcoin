@@ -33,7 +33,8 @@ jobs:
           name: windows-build-${{ github.run_number }}
           path: |
             contrib/build-wine/dist/*.exe
-            contrib/build-wine/dist/electrum/*.exe
+            contrib/build-wine/dist/*.zip
+            contrib/build-wine/dist/electrum/
 
       - name: Upload to Release
         if: github.event_name == 'release'
@@ -41,7 +42,7 @@ jobs:
         with:
           files: |
             contrib/build-wine/dist/*.exe
-            contrib/build-wine/dist/electrum/*.exe
+            contrib/build-wine/dist/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

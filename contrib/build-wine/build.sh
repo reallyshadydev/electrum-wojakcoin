@@ -74,4 +74,5 @@ docker run $DOCKER_RUN_FLAGS \
 if [ ! -z "$ELECBUILD_COMMIT" ] ; then
     mkdir --parents "$PROJECT_ROOT/contrib/build-wine/dist/"
     cp -f "$FRESH_CLONE/contrib/build-wine/dist"/*.exe "$PROJECT_ROOT/contrib/build-wine/dist/"
+    cp -f "$FRESH_CLONE/contrib/build-wine/dist"/*.zip "$PROJECT_ROOT/contrib/build-wine/dist/" 2>/dev/null || true
 fi

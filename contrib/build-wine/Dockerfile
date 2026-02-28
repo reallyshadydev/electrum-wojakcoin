@@ -31,6 +31,7 @@ RUN dpkg --add-architecture i386 && \
         gettext \
         sudo \
         nsis \
+        zip \
         && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove -y && \
