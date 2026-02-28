@@ -33,6 +33,11 @@ export WINEDEBUG=-all
 export WINE_PYHOME="c:/python3"
 export WINE_PYTHON="wine $WINE_PYHOME/python.exe -B"
 
+# Headless/CI: avoid "XDG_RUNTIME_DIR is invalid or not set" (Qt, etc.)
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp/xdg-runtime}"
+mkdir -p "$XDG_RUNTIME_DIR" 2>/dev/null || true
+chmod 700 "$XDG_RUNTIME_DIR" 2>/dev/null || true
+
 . "$CONTRIB"/build_tools_util.sh
 
 git -C "$PROJECT_ROOT" rev-parse 2>/dev/null || fail "Building outside a git clone is not supported."

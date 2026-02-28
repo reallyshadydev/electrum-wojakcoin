@@ -70,3 +70,6 @@ RUN chown ${UID} /opt
 USER ${UID}
 
 RUN mkdir --parents "/opt/wine64/drive_c/electrum"
+# Headless/CI: avoid "XDG_RUNTIME_DIR is invalid or not set" (Qt, etc.)
+ENV XDG_RUNTIME_DIR=/tmp/runtime
+RUN mkdir -p /tmp/runtime && chmod 1777 /tmp/runtime
