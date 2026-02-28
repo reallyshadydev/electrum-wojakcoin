@@ -81,6 +81,7 @@ class AbstractNet:
     XPRV_HEADERS_INV: Mapping[int, str]
     XPUB_HEADERS: Mapping[str, int]
     XPUB_HEADERS_INV: Mapping[int, str]
+    DEFAULT_TX_VERSION: int = 2  # nVersion for new txs; 1 for chains that reject version 2
 
     @classmethod
     def max_checkpoint(cls) -> int:
@@ -272,6 +273,7 @@ class WojakCoinMainnet(AbstractNet):
     BOLT11_HRP = SEGWIT_HRP
     GENESIS = "000000004536a4f8fa9d88f0001ca9f9825f8d9fd3ba6383a2f030c0427bf085"
     DEFAULT_PORTS = {'t': '50101', 's': '50102'}
+    DEFAULT_TX_VERSION = 1  # node policy rejects version 2 ("non-standard version")
     BLOCK_HEIGHT_FIRST_LIGHTNING_CHANNELS = 0
 
     XPRV_HEADERS = {

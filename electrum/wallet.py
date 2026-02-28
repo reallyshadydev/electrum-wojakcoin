@@ -193,7 +193,8 @@ async def sweep(
     outputs = [PartialTxOutput(scriptpubkey=bitcoin.address_to_script(to_address), value=total - fee)]
     if locktime is None:
         locktime = get_locktime_for_new_transaction(network)
-    tx = PartialTransaction.from_io(inputs, outputs, locktime=locktime, version=tx_version)
+    tx_version_effective = tx_version if tx_version is not None else constants.net.DEFAULT_TX_VERSION
+    tx = PartialTransaction.from_io(inputs, outputs, locktime=locktime, version=tx_version_effective)
     tx.set_rbf(True)
     tx.sign(keypairs)
     return tx
@@ -2137,8 +2138,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
             # Timelock tx to current height.
             locktime = get_locktime_for_new_transaction(self.network)
         tx.locktime = locktime
-        if tx_version is not None:
-            tx.version = tx_version
+        tx.version = tx_version if tx_version is not None else constants.net.DEFAULT_TX_VERSION
         tx.rbf_merge_txid = rbf_merge_txid
         tx.add_info_from_wallet(self)
         run_hook('make_unsigned_transaction', self, tx)
@@ -2459,7 +2459,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
         if delta > 0:
             raise CannotBumpFee(_('Could not find suitable outputs'))
 
-        return PartialTransaction.from_io(inputs, outputs)
+        return PartialTransaction.from_io(inputs, outputs, version=constants.net.DEFAULT_TX_VERSION)
 
     def _bump_fee_through_decreasing_payment(
             self,
@@ -2519,7 +2519,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
             raise CannotBumpFee(_('Could not find suitable outputs'))
 
         outputs = [out for (idx, out) in enumerate(outputs) if idx not in del_out_idxs]
-        return PartialTransaction.from_io(inputs, outputs)
+        return PartialTransaction.from_io(inputs, outputs, version=constants.net.DEFAULT_TX_VERSION)
 
     def _is_rbf_allowed_to_touch_tx_output(self, txout: TxOutput) -> bool:
         # 2fa fee outputs if present, should not be removed or have their value decreased
@@ -2558,7 +2558,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
             raise CannotCPFP(_("The output value remaining after fee is too low."))
         outputs = [PartialTxOutput.from_address_and_value(out_address, output_value)]
         locktime = get_locktime_for_new_transaction(self.network)
-        tx_new = PartialTransaction.from_io(inputs, outputs, locktime=locktime)
+        tx_new = PartialTransaction.from_io(inputs, outputs, locktime=locktime, version=constants.net.DEFAULT_TX_VERSION)
         tx_new.set_rbf(True)
         tx_new.add_info_from_wallet(self)
         return tx_new
@@ -2601,7 +2601,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
                        or self.get_receiving_address())
         locktime = get_locktime_for_new_transaction(self.network)
         outputs = [PartialTxOutput.from_address_and_value(out_address, value)]
-        tx_new = PartialTransaction.from_io(inputs, outputs, locktime=locktime)
+        tx_new = PartialTransaction.from_io(inputs, outputs, locktime=locktime, version=constants.net.DEFAULT_TX_VERSION)
         new_tx_size = tx_new.estimated_size()
         new_fee = max(
             new_fee_rate * new_tx_size,
@@ -2612,7 +2612,7 @@ class Abstract_Wallet(ABC, Logger, EventListener):
         if output_value < self.dust_threshold():
             raise CannotDoubleSpendTx(_("The output value remaining after fee is too low."))
         outputs = [PartialTxOutput.from_address_and_value(out_address, value - new_fee)]
-        tx_new = PartialTransaction.from_io(inputs, outputs, locktime=locktime)
+        tx_new = PartialTransaction.from_io(inputs, outputs, locktime=locktime, version=constants.net.DEFAULT_TX_VERSION)
         tx_new.set_rbf(True)
         tx_new.add_info_from_wallet(self)
         return tx_new
