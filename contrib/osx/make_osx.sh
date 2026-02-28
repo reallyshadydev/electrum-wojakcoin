@@ -43,6 +43,9 @@ echo "8373e58da4ea146b3eb1c1f9834f19a319440b6b679b06050b1f9ee3237aa8e4  $CACHEDI
 sudo installer -pkg "$CACHEDIR/$PKG_FILE" -target / \
     || fail "failed to install python"
 
+# Prefer the Python we just installed (CI runners may have another python3 in PATH)
+export PATH="/Library/Frameworks/Python.framework/Versions/$PY_VER_MAJOR/bin:$PATH"
+
 # sanity check "python3" has the version we just installed.
 FOUND_PY_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:3])))')
 if [[ "$FOUND_PY_VERSION" != "$PYTHON_VERSION" ]]; then
