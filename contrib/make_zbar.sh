@@ -38,10 +38,14 @@ info "Building $pkgname..."
     git clean -dfxq
     git checkout "${ZBAR_VERSION}^{commit}"
 
-    if [ "$BUILD_TYPE" = "wine" ] ; then
-        echo "libzbar_la_LDFLAGS += -Wc,-static" >> zbar/Makefile.am
-        echo "LDFLAGS += -Wc,-static" >> Makefile.am
-    fi
+        if [ "$BUILD_TYPE" = "wine" ] ; then
+            echo "libzbar_la_LDFLAGS += -Wc,-static" >> zbar/Makefile.am
+            echo "LDFLAGS += -Wc,-static" >> Makefile.am
+        fi
+        if [ $(uname) == "Darwin" ]; then
+            # Ensure libzbar links iconv (qrdectxt.c uses iconv; needed for arm64)
+            echo "libzbar_la_LIBADD += -liconv" >> zbar/Makefile.am
+        fi
     if ! [ -x configure ] ; then
         autoreconf -vfi || fail "Could not run autoreconf for $pkgname. Please make sure you have automake and libtool installed, and try again."
     fi
@@ -55,7 +59,9 @@ info "Building $pkgname..."
                 --with-directshow=yes \
                 --disable-dependency-tracking"
         elif [ $(uname) == "Darwin" ]; then
-            # macos target
+            # macos target; link iconv (required for qr_code_data_list_extract_text on arm64)
+            export LDFLAGS="${LDFLAGS:-} -liconv"
+            export LIBS="${LIBS:-} -liconv"
             AUTOCONF_FLAGS="$AUTOCONF_FLAGS \
                 --with-x=no \
                 --enable-video=no \
