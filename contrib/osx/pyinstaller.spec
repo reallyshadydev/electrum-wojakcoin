@@ -117,7 +117,7 @@ exe = EXE(
     upx=True,
     icon=ICONS_FILE,
     console=False,
-    target_arch='x86_64',  # TODO investigate building 'universal2'
+    target_arch=os.environ.get('PYINSTALLER_TARGET_ARCH', 'x86_64'),  # arm64 on Apple Silicon, x86_64 on Intel
 )
 
 app = BUNDLE(
