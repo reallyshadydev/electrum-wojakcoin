@@ -1,0 +1,55 @@
+# Build Android APK; attach to GitHub Release when a release is published.
+# Runnable manually (workflow_dispatch) with optional release_tag to attach to that release.
+
+name: Build Android (Electrum WojakCoin)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Optional: tag of release to attach APK to (e.g. v4.7.3-wojak)'
+        required: false
+
+jobs:
+  build-android:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+          fetch-depth: 0
+
+      - name: Build Android APK
+        run: |
+          ./contrib/android/build.sh qml arm64-v8a debug
+
+      - name: Upload artifacts to workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-${{ github.run_number }}
+          path: dist/*.apk
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Android to existing Release
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event.inputs.release_tag }}
+        run: |
+          RELEASE_ID=$(curl -sS -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${{ github.repository }}/releases/tags/$RELEASE_TAG" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+          for f in dist/*.apk; do
+            [ -f "$f" ] && curl -sS -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/octet-stream" --data-binary "@$f" "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename "$f")"
+          done

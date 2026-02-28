@@ -4,5 +4,6 @@
   <category android:name="android.intent.category.DEFAULT" />
   <category android:name="android.intent.category.BROWSABLE" />
   <data android:scheme="bitcoin" />
+  <data android:scheme="wojakcoin" />
   <data android:scheme="lightning" />
 </intent-filter>

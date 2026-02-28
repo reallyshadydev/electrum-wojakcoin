@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = Electrum
+title = Electrum WojakCoin
 
-# (str) Package name
-package.name = Electrum
+# (str) Package name (full package will be org.electrum.wojakcoin.electrum for chain selection)
+package.name = wojakcoin.electrum
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.electrum

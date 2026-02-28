@@ -66,8 +66,8 @@ You probably need to clear the cache: `rm -rf .buildozer/android/platform/build-
 ### How do I deploy on connected phone for quick testing?
 Assuming `adb` is installed:
 ```
-$ adb -d install -r dist/Electrum-*-arm64-v8a-debug.apk
-$ adb shell monkey -p org.electrum.electrum 1
+$ adb -d install -r dist/Electrum-WojakCoin-*-arm64-v8a-debug.apk
+$ adb shell monkey -p org.electrum.wojakcoin.electrum 1
 ```
 Note `adb install` can take a `--user {userId}` option to install the app for a specific profile.
 Without that, the default is to install to *all* profiles.
@@ -136,21 +136,20 @@ and [android dev docs](https://developer.android.com/studio/build/building-cmdli
 Note that this only works for debug builds! Otherwise the security model
 of Android does not let you access the internal storage of an app without root.
 (See [this](https://stackoverflow.com/q/9017073))
-To pull a file:
+To pull a file (use package name `org.electrum.wojakcoin.electrum` for this app):
 ```
 $ adb shell
-adb$ run-as org.electrum.electrum ls /data/data/org.electrum.electrum/files/data
+adb$ run-as org.electrum.wojakcoin.electrum ls /data/data/org.electrum.wojakcoin.electrum/files/data
 adb$ exit
-$ adb exec-out run-as org.electrum.electrum cat /data/data/org.electrum.electrum/files/data/wallets/my_wallet > my_wallet
+$ adb exec-out run-as org.electrum.wojakcoin.electrum cat /data/data/org.electrum.wojakcoin.electrum/files/data/wallets/my_wallet > my_wallet
 ```
 To push a file:
 ```
 $ adb push ~/wspace/tmp/my_wallet /data/local/tmp
 $ adb shell
-adb$ ls -la /data/local/tmp
-adb$ run-as org.electrum.testnet.electrum cp /data/local/tmp/my_wallet /data/data/org.electrum.testnet.electrum/files/data/testnet/wallets/
-adb$ run-as org.electrum.testnet.electrum chmod -R 700 /data/data/org.electrum.testnet.electrum/files/data/testnet/wallets
-adb$ run-as org.electrum.testnet.electrum chmod -R u-x,u+X /data/data/org.electrum.testnet.electrum/files/data/testnet/wallets
+adb$ run-as org.electrum.wojakcoin.electrum cp /data/local/tmp/my_wallet /data/data/org.electrum.wojakcoin.electrum/files/data/wojakcoin/wallets/
+adb$ run-as org.electrum.wojakcoin.electrum chmod -R 700 /data/data/org.electrum.wojakcoin.electrum/files/data/wojakcoin/wallets
+adb$ run-as org.electrum.wojakcoin.electrum chmod -R u-x,u+X /data/data/org.electrum.wojakcoin.electrum/files/data/wojakcoin/wallets
 adb$ rm /data/local/tmp/my_wallet
 ```
 
