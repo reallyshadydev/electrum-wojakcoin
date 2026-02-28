@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from PyInstaller.building.build_main import Analysis, PYZ, EXE, BUNDLE
 
 
-PACKAGE_NAME='Electrum.app'
+PACKAGE_NAME = os.environ.get('PACKAGE_NAME', 'Electrum.app')
 PYPKG='electrum'
 MAIN_SCRIPT='run_electrum'
 PROJECT_ROOT = os.path.abspath(".")
@@ -135,7 +135,7 @@ app = BUNDLE(
         'CFBundleURLTypes':
             [{
                 'CFBundleURLName': 'bitcoin',
-                'CFBundleURLSchemes': ['bitcoin', 'lightning', ],
+                'CFBundleURLSchemes': ['bitcoin', 'wojakcoin', 'lightning', ],
             }],
         'LSMinimumSystemVersion': '11',
         'NSCameraUsageDescription': 'Electrum would like to access the camera to scan for QR codes',

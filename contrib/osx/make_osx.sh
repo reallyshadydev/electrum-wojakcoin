@@ -5,7 +5,7 @@ set -e
 # Parameterize
 PYTHON_VERSION=3.12.10
 PY_VER_MAJOR="3.12"  # as it appears in fs paths
-PACKAGE=Electrum
+PACKAGE="${PACKAGE:-Electrum}"
 GIT_REPO=https://github.com/spesmilo/electrum
 
 export GCC_STRIP_BINARIES="1"
@@ -215,6 +215,7 @@ find . -exec touch -t '200101220000' {} + || true
 VERSION=$(git describe --tags --always)
 
 info "Building binary"
+export PACKAGE_NAME="${PACKAGE}.app"
 ELECTRUM_VERSION=$VERSION pyinstaller --noconfirm --clean contrib/osx/pyinstaller.spec || fail "Could not build binary"
 
 info "Finished building unsigned dist/${PACKAGE}.app. This hash should be reproducible:"
