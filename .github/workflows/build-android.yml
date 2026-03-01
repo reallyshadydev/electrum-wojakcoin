@@ -15,7 +15,7 @@ on:
 jobs:
   build-android:
     runs-on: ubuntu-22.04
-    timeout-minutes: 120
+    timeout-minutes: 360
     permissions:
       contents: write
     steps:
