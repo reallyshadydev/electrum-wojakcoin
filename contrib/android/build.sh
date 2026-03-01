@@ -67,7 +67,7 @@ if [[ "$3" == "release" ]] ; then
     info "'release' mode selected. mounting ~/.keystore inside container."
     DOCKER_RUN_FLAGS="-v $HOME/.keystore:/home/user/.keystore"
 fi
-if sh -c ": >/dev/tty" >/dev/null 2>/dev/null; then
+if sh -c ": >/dev/tty" >/dev/null 2>/dev/null && [ -z "${CI:-}" ]; then
     info "/dev/tty is available and usable"
     DOCKER_RUN_FLAGS="$DOCKER_RUN_FLAGS -it"
 fi
